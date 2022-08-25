@@ -1,39 +1,40 @@
-import random
-from typing import Dict, List, Union
-
+import pandas as pd
 import psycopg2.extras as p
 from utils.db import WarehouseConnection
-from utils.sde_config import get_warehouse_creds
+from utils.sfl_config import get_warehouse_creds
 
-
-def _get_user_data_insert_query() -> str:
+# Query in SQL for data insertion into table
+def _get_user_data_insert_query():
     return """
-    INSERT INTO housing.user(
+    INSERT INTO info.userinfo (
         id,
-        name,
-        price
+        first_name,
+        last_name,
+        email,
+        gender,
+        ip_address
     )
     VALUES (
-        %(user_id)s,
-        %(user_name)s,
-        %(price)s
+        %s,
+        %s,
+        %s,
+        %s,
+        %s,
+        %s
     )
     """
 
+# Read data from CSV, transform some columns, and return as list
+def get_user_data(filename='DE Data.csv'):
+    data_df = pd.read_csv('./' + filename)      # Can replace file path with desired path on local system
+    data_df['id'] = data_df['id'].apply(int)    # Cast id column into integers
+    data_df['first_name'] = data_df['first_name'].str.capitalize()  # Names already appear to be capitalized, but just to be sure
+    data_df['last_name'] = data_df['last_name'].str.capitalize()    # Names already appear to be capitalized, but just to be sure
+    data_df['email'] = data_df['email'].str.lower()     # Lowercase emails for easier potential parsing
+    data_df['gender'] = data_df['gender'].str.lower()   # Lowercase gender for easier potential parsing
+    return data_df.values.tolist()
 
-def get_user_data(num_records: int = 10) -> List[Dict[str, Union[int, str]]]:
-    return [
-        {
-            "user_id": random.randint(1, 10000),
-            "user_name": random.choice(
-                ["john", "jane", "ash", "misty", "brock"]
-            ),
-            "price": random.randint(10000, 100000),
-        }
-        for _ in range(num_records)
-    ]
-
-
+# Function to get data from CSV and insert each user into warehouse
 def load_user_data():
     user_data = get_user_data()
     with WarehouseConnection(get_warehouse_creds()).managed_cursor() as curr:

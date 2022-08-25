@@ -2,7 +2,7 @@ import os
 
 from utils.db import DBConnection
 
-
+# Read warehouse credentials from env file
 def get_warehouse_creds() -> DBConnection:
     return DBConnection(
         user=os.getenv("WAREHOUSE_USER", ""),

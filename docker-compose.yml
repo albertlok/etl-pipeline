@@ -1,8 +1,8 @@
-version: '3'
+version: '1'
 
 services:
   warehouse:
-    image: postgres:13
+    image: postgres:14
     container_name: warehouse
     environment:
       POSTGRES_USER: ${WAREHOUSE_USER}
@@ -18,7 +18,7 @@ services:
     ports:
       - "5432:5432"
     networks:
-      - sde_network
+      - sfl_network
 
   loader:
     image: loader
@@ -26,7 +26,7 @@ services:
     build:
       context: ./containers/loader/
     volumes:
-      - ./:/opt/sde
+      - ./:/opt/sfl
     environment:
       WAREHOUSE_USER: ${WAREHOUSE_USER}
       WAREHOUSE_PASSWORD: ${WAREHOUSE_PASSWORD}
@@ -34,20 +34,8 @@ services:
       WAREHOUSE_HOST: ${WAREHOUSE_HOST}
       WARREHOUSE_PORT: ${WAREHOUSE_PORT}
     networks:
-      - sde_network
-
-  dashboard:
-    image: metabase/metabase
-    container_name: dashboard
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./metabase-data:/metabase-data
-    environment:
-      MB_DB_FILE: /metabase-data/metabase.db
-    networks:
-      - sde_network
+      - sfl_network
 
 networks:
-  sde_network:
-    name: sde_network
+  sfl_network:
+    name: sfl_network
