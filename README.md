@@ -27,6 +27,7 @@ make down # spins down the containers
 ## Explanations
 
 Folder structure:
+```bash
 .
 ├── Makefile                                  # Define aliases for complex commands
 ├── README.md                                 # This file
@@ -51,6 +52,7 @@ Folder structure:
     │   └── sfl_config.cpython-39.pyc
     ├── db.py                                 # Establish connection with warehouse
     └── sfl_config.py                         # Read environment variables from env
+```
 
 Image for python 3.9.5 used in the Dockerfile, with add-ons in requirements.txt:
 ```
